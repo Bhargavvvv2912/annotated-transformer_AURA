@@ -4,6 +4,7 @@ import os
 import sys
 # We import the NEW Google library
 from google import genai
+from typing import Union, Optional
 
 from agent_logic import DependencyAgent
 
