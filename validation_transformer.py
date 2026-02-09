@@ -2,58 +2,54 @@ import sys
 import torch
 
 # ==============================================================================
-# 1. TORCHTEXT API INTEGRITY CHECK
+# 1. TORCHTEXT API STABILITY CHECK
 # ==============================================================================
 try:
     import torchtext
-    from torchtext import datasets
     print(f"DEBUG: Torchtext version {torchtext.__version__} detected.")
     
-    # The 'Trap': Modern torchtext (0.13+) removed the legacy 'data' module 
-    # and the 'Field' class. Legacy Transformer code relies on this.
+    # CASE A: Legacy TorchText (0.9.0 - 0.12.0)
+    # The 'Annotated Transformer' code expects Field to exist.
+    # In these versions, it was moved to a '.legacy' submodule.
     try:
         from torchtext.legacy import data
-        print("DEBUG: Legacy torchtext.legacy.data found.")
+        test_field = data.Field(lower=True)
+        print("SUCCESS: Found 'Field' in torchtext.legacy.data.")
+    
     except (ImportError, ModuleNotFoundError):
+        # CASE B: Very Old TorchText (< 0.9.0)
         try:
             from torchtext import data
-            # Check if it actually has 'Field' (removed in 0.13+)
             test_field = data.Field(lower=True)
-            print("DEBUG: Standard torchtext.data.Field is functional.")
+            print("SUCCESS: Found 'Field' in torchtext.data.")
+        
         except AttributeError:
-            print("CRITICAL: API DEPLETION! torchtext.data has no attribute 'Field'.")
-            sys.exit(1)
-        except Exception as e:
-            print(f"CRITICAL: Torchtext API is broken: {e}")
+            # CASE C: Modern TorchText (0.13.0+) 
+            # This is where Pip Upgrade will fail.
+            print("CRITICAL: API DEPLETION! TorchText 0.13+ deleted the 'Field' class.")
+            print("Action Required: Roll back torchtext to <= 0.12.0.")
             sys.exit(1)
 
 except ImportError:
-    print("CRITICAL: Torchtext not found.")
+    print("CRITICAL: torchtext is not installed.")
+    sys.exit(1)
+except Exception as e:
+    print(f"CRITICAL: Unexpected validation error: {e}")
     sys.exit(1)
 
 # ==============================================================================
-# 2. TRANSFORMER CORE LOGIC CHECK
+# 2. PYTORCH CORE CHECK
 # ==============================================================================
 try:
-    # We verify that the actual Transformer layers can be initialized
     import torch.nn as nn
+    # Verify we can at least initialize a basic Transformer component
+    # (Checking for the existence of MultiheadAttention as a proxy)
+    mha = nn.MultiheadAttention(embed_dim=512, num_heads=8)
+    print(f"DEBUG: PyTorch {torch.__version__} core functional.")
     
-    # A tiny check for a core Transformer component
-    c = nn.Parameter(torch.zeros(512))
-    print(f"DEBUG: Torch core {torch.__version__} initialized.")
-
-    def smoke_test():
-        print("Initializing Annotated Transformer logic check...")
-        # If we reached here without an AttributeError in torchtext, we are golden.
-        print("SUCCESS: Dependencies are API-compatible.")
-        return True
-
-    if __name__ == "__main__":
-        if smoke_test():
-            sys.exit(0)
-        else:
-            sys.exit(1)
+    print("\n--- VALIDATION PASSED ---")
+    sys.exit(0)
 
 except Exception as e:
-    print(f"\nVALIDATION CRASHED: {e}")
+    print(f"CRITICAL: PyTorch core logic failure: {e}")
     sys.exit(1)
