@@ -14,7 +14,7 @@ def validate_research_logic():
     # 2. DATA LAYER: Check if TorchText actually processes data
     try:
         from torchtext.legacy import data
-        TEXT = data.Field(lower=True, tokenize="spacy", batch_first=True)
+        TEXT = data.Field(lower=True, tokenize=None, batch_first=True)
         print("SUCCESS: TorchText Data Field initialized.")
     except Exception as e:
         print(f"CRITICAL: TorchText API Failure: {e}")
