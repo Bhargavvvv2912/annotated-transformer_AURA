@@ -25,7 +25,7 @@ jobs:
           ./baseline_env/bin/pip install --upgrade pip
           
           # Step A: Install the specific legacy build tools
-          ./baseline_env/bin/pip install "setuptools<70.0.0" wheel "numpy==1.21.6" "Cython<3.0"
+          ./baseline_env/bin/pip install "setuptools<70.0.0" wheel "numpy==1.23.4" "Cython<3.0"
           
           # Step B: Install requirements while SHARING the environment tools
           # This prevents Pip from creating a fresh (and broken) build environment
