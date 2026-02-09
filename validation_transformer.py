@@ -1,35 +1,29 @@
 import sys
-import torch
 import collections
 
-# Fix for legacy torchtext on newer Python versions
+# Fix for legacy torchtext on Python 3.9+
 if not hasattr(collections, 'Iterable'):
     import collections.abc
     collections.Iterable = collections.abc.Iterable
 
 try:
+    import torch
     import torchtext
-    print(f"DEBUG: Torchtext version {torchtext.__version__} detected.")
+    print(f"DEBUG: Torch {torch.__version__} | TorchText {torchtext.__version__}")
     
-    # Check for the legacy path specifically
-    try:
-        from torchtext.legacy import data
-        test_field = data.Field(lower=True)
-        print("SUCCESS: Found 'Field' in torchtext.legacy.data.")
-        sys.exit(0)
-    except Exception as e:
-        print(f"DEBUG: Failed to import from .legacy: {e}")
-        
-        # Fallback to standard path
-        try:
-            from torchtext import data
-            test_field = data.Field(lower=True)
-            print("SUCCESS: Found 'Field' in torchtext.data.")
-            sys.exit(0)
-        except Exception as e2:
-            print(f"CRITICAL: Field class is truly missing. {e2}")
-            sys.exit(1)
+    # In 0.11.0, Field lives in torchtext.legacy.data
+    from torchtext.legacy import data
+    test_field = data.Field(lower=True)
+    print("SUCCESS: Found 'Field' in torchtext.legacy.data.")
+    
+    # Simple logic check
+    import torch.nn as nn
+    mha = nn.MultiheadAttention(embed_dim=512, num_heads=8)
+    print("DEBUG: PyTorch core layers functional.")
+    
+    print("\n--- BASELINE GREEN ---")
+    sys.exit(0)
 
-except ImportError:
-    print("CRITICAL: torchtext not found.")
+except (ImportError, AttributeError, ModuleNotFoundError) as e:
+    print(f"CRITICAL: API Failure! Missing legacy components: {e}")
     sys.exit(1)
