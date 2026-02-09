@@ -51,6 +51,8 @@ jobs:
           ./aura_env/bin/pip install "setuptools<70.0.0" wheel
           ./aura_env/bin/pip install google-genai google-api-core pypi-simple packaging pip-tools tenacity
           ./aura_env/bin/python -u dependency_agent.py | tee aura_t2t_execution.log
+        env:
+           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
 
 
       - name: 💾 Final Commit
