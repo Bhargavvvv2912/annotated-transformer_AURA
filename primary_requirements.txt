@@ -11,3 +11,4 @@ GPUtil
 wandb
 setuptools<70.0.0
 numpy
+wheel

@@ -10,4 +10,5 @@ black==22.3.0
 GPUtil==1.4.0
 wandb==0.12.11
 setuptools<70.0.0
-numpy==1.21.6
+numpy==1.26.4
+wheel
