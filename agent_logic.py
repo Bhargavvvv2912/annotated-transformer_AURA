@@ -90,8 +90,19 @@ class DependencyAgent:
             sys.exit(f"Error: {self.config['REQUIREMENTS_FILE']} not found.")
             
         with open(self.requirements_path, "r") as f:
+            # Filter for non-empty lines that aren't comments
             lines = [line.strip() for line in f if line.strip() and not line.strip().startswith('#')]
-        is_fully_pinned = all('==' in line or line.startswith('-e') for line in lines)
+        
+        # List of valid Pip version operators
+        version_operators = ['==', '>=', '<=', '>', '<', '~=', '!=']
+        
+        # Check if every line is either an editable install (-e) 
+        # or contains at least one version operator.
+        is_fully_pinned = all(
+            any(op in line for op in version_operators) or line.startswith('-e') 
+            for line in lines
+        )
+        
         return is_fully_pinned, lines
 
     def _bootstrap_unpinned_requirements(self, is_fallback_attempt=False):

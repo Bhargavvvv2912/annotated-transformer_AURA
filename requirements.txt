@@ -9,3 +9,4 @@ flake8==4.0.1
 black==22.3.0
 GPUtil==1.4.0
 wandb==0.12.11
+setuptools<70.0.0

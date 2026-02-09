@@ -9,3 +9,4 @@ flake8
 black
 GPUtil
 wandb
+setuptools<70.0.0
