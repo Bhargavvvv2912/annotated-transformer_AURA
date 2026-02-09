@@ -1,0 +1,56 @@
+name: AURA Experiment - Annotated Transformer (Repo 37)
+
+on:
+  workflow_dispatch:
+
+jobs:
+  modernize-transformer:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python 3.11
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: 🧪 1. Run Pip Baseline (The 2022 Era)
+        continue-on-error: true
+        run: |
+          python -m venv baseline_env
+          ./baseline_env/bin/pip install --upgrade pip
+          ./baseline_env/bin/pip install -r requirements.txt
+          ./baseline_env/bin/python validation_transformer.py
+
+      - name: 💥 2. Run Pip Upgrade (The 2026 API Attack)
+        continue-on-error: true
+        run: |
+          python -m venv upgrade_env
+          ./upgrade_env/bin/pip install --upgrade pip
+          ./upgrade_env/bin/pip install -r primary_requirements.txt
+          ./upgrade_env/bin/python validation_transformer.py
+
+      - name: 🤖 3. Run AURA Agent (The Resurrection Phase)
+        run: |
+          python -m venv aura_env
+          ./aura_env/bin/pip install --upgrade pip
+          ./aura_env/bin/pip install google-genai google-api-core pypi-simple packaging pip-tools tenacity
+          # The agent will detect the 'Field' removal and find the working ceiling
+          ./aura_env/bin/python -u dependency_agent.py | tee aura_transformer_execution.log
+        env:
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+
+      - name: 💾 Final Commit
+        if: always()
+        run: |
+          git config --global user.name 'AURA Agent'
+          git config --global user.email 'aura-agent@users.noreply.github.com'
+          git add requirements.txt aura_transformer_execution.log
+          if ! git diff --staged --quiet; then
+            git commit -m "🤖 [ASE-2026] REPO 37: Modernized Annotated Transformer [skip ci]"
+            git push
+          fi
