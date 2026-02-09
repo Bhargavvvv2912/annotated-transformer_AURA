@@ -2,7 +2,6 @@ pandas
 torch
 torchdata
 torchtext
-spacy
 altair
 jupytext
 flake8
